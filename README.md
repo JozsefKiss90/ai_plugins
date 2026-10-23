@@ -26,6 +26,7 @@ Then open a **new terminal** (env vars), `node scripts/doctor.mjs` to verify, an
 | [claude-mem](https://github.com/thedotmack/claude-mem) | plugin | Persistent memory across sessions |
 | [CodeBurn](https://github.com/getagentseal/codeburn) | CLI + MCP | Token/cost tracking per project |
 | [Superpowers](https://github.com/obra/superpowers) | plugin | TDD, debugging, planning, brainstorming skills |
+| [Matt Pocock skills](https://github.com/mattpocock/skills) | 27 skills | Spec-driven flow: `/grill-me` → `/to-spec` → `/to-tickets` → `/implement`, plus tdd, diagnosing-bugs, research, handoff, writing-for-agents |
 | [Dynamic Context Pruning](https://github.com/Tarquinen/opencode-dynamic-context-pruning) | plugin | Prunes stale tool output → fewer tokens |
 | [GitHub MCP](https://github.com/github/github-mcp-server) | MCP | Issues/PRs/Actions |
 | [Sequential Thinking + Memory](https://github.com/modelcontextprotocol/servers) | MCP | Reference reasoning + knowledge-graph memory |

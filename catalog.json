@@ -7,7 +7,8 @@
       "ponytail",
       "code-review",
       "superpowers",
-      "dcp"
+      "dcp",
+      "mattpocock-skills"
     ],
     "coding": [
       "graphify",
@@ -25,7 +26,8 @@
       "gitnexus",
       "exa",
       "ai-second-brain",
-      "omo-slim"
+      "omo-slim",
+      "mattpocock-skills"
     ],
     "design": [
       "taste-skill",
@@ -272,6 +274,32 @@
           "superpowers@git+https://github.com/obra/superpowers.git"
         ]
       }
+    },
+    {
+      "id": "mattpocock-skills",
+      "name": "Matt Pocock skills (27 skills)",
+      "kind": "skill",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/mattpocock/skills",
+      "summary": "Spec-driven workflow: grill-me, to-spec, to-tickets, implement, tdd, diagnosing-bugs, code-review, research, handoff, writing-for-agents…",
+      "steps": [
+        {
+          "run": "npx -y skills add mattpocock/skills --skill \"*\" -a opencode -g -y --copy"
+        }
+      ],
+      "skillsInstalled": [
+        "grill-me",
+        "to-spec",
+        "to-tickets",
+        "implement",
+        "tdd",
+        "diagnosing-bugs",
+        "research",
+        "handoff",
+        "writing-for-agents"
+      ],
+      "notes": "Start with /grill-me on a plan, then /to-spec → /to-tickets → /implement. `setup-matt-pocock-skills` configures a repo's issue tracker/labels/doc layout. Its `code-review`/`research`/`tdd` skills coexist with Superpowers' and our @reviewer — pick one convention per project in AGENTS.md."
     },
     {
       "id": "dcp",
