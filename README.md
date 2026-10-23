@@ -96,5 +96,4 @@ Node 22+, git, Python 3.10+, [uv](https://docs.astral.sh/uv/) (installed by `ins
 - claude-mem's installer is interactive (hosted sign-in or your own model key); run it with `--only claude-mem` if you skipped it.
 - Anthropic's official `code-review` plugin is Claude-Code-only; `opencode-code-review` + `@reviewer` cover OpenCode.
 - Scraping and lead tools: respect the target sites' ToS and GDPR; the `outreach-campaign` skill asks before sending or spending credits.
-#   a i _ p l u g i n s  
- 
+#
