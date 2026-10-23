@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md", "DESIGN.md", "PRODUCT.md", "docs/*.md"],
+  "permission": {
+    "edit": "allow",
+    "bash": "ask",
+    "webfetch": "allow",
+    "skill": { "*": "allow" }
+  },
+  "tools": {
+    "scrapling*": false,
+    "scrapegraph*": false,
+    "rea*": false,
+    "laya*": false
+  },
+  "agent": {
+    "reviewer": { "tools": { "serena*": true, "graphify*": true } },
+    "security-auditor": { "tools": { "serena*": true } },
+    "researcher": { "tools": { "scrapling*": true, "scrapegraph*": true, "playwright*": true, "exa*": true, "firecrawl*": true } }
+  }
+}

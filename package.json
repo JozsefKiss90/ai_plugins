@@ -1,0 +1,17 @@
+{
+  "name": "opencode-toolkit",
+  "private": true,
+  "type": "module",
+  "description": "Shared, one-command setup of plugins, skills and MCP servers for OpenCode projects",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "install:all": "node scripts/install.mjs --profile all",
+    "install:coding": "node scripts/install.mjs --profile coding",
+    "install:design": "node scripts/install.mjs --profile design",
+    "install:marketing": "node scripts/install.mjs --profile marketing",
+    "doctor": "node scripts/doctor.mjs",
+    "env": "node scripts/env.mjs",
+    "new": "node scripts/new-project.mjs",
+    "designs": "node scripts/list-designs.mjs"
+  }
+}

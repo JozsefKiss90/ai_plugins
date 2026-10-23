@@ -1,0 +1,1380 @@
+{
+  "$comment": "Single source of truth for the toolkit. Each tool: id, kind (mcp|plugin|skill|cli|provider|app|reference), group, default (installed when no --profile/--only given), requires (binaries), env (keys), git (vendored clone), steps (shell), skills (name -> source dir, or installed via steps), config (merged into ~/.config/opencode/opencode.json), notes.",
+  "profiles": {
+    "minimal": [
+      "context7",
+      "serena",
+      "ponytail",
+      "code-review",
+      "superpowers",
+      "dcp"
+    ],
+    "coding": [
+      "graphify",
+      "codeburn",
+      "ponytail",
+      "code-review",
+      "claude-mem",
+      "serena",
+      "context7",
+      "superpowers",
+      "dcp",
+      "github",
+      "sequential-thinking",
+      "repomix",
+      "gitnexus",
+      "exa",
+      "ai-second-brain",
+      "omo-slim"
+    ],
+    "design": [
+      "taste-skill",
+      "impeccable",
+      "playwright",
+      "awesome-design-md",
+      "img2threejs",
+      "ui-ux-pro-max",
+      "claude-motion",
+      "frontend-design",
+      "21st",
+      "superdesign",
+      "open-design"
+    ],
+    "security": [
+      "strix",
+      "security-audit-skill",
+      "rea"
+    ],
+    "web": [
+      "scrapling",
+      "scrapegraph",
+      "firecrawl",
+      "exa",
+      "agent-reach",
+      "playwright"
+    ],
+    "marketing": [
+      "marketingskills",
+      "office-skills",
+      "client-pitch",
+      "portfolio-site",
+      "outreach-campaign",
+      "apollo",
+      "hubspot",
+      "hunter",
+      "resend",
+      "canva",
+      "figma",
+      "notion",
+      "apify",
+      "stripe",
+      "superdesign",
+      "exa"
+    ],
+    "all": [
+      "*"
+    ]
+  },
+  "tools": [
+    {
+      "id": "graphify",
+      "name": "Graphify",
+      "kind": "cli+skill",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/safishamsi/graphify",
+      "summary": "Turns a codebase/docs into a queryable knowledge graph; /graphify . in OpenCode",
+      "requires": [
+        "uv"
+      ],
+      "steps": [
+        {
+          "run": "uv tool install --upgrade graphifyy"
+        },
+        {
+          "run": "graphify install --platform opencode"
+        }
+      ],
+      "env": [
+        {
+          "name": "GEMINI_API_KEY",
+          "required": false,
+          "url": "https://aistudio.google.com/apikey",
+          "note": "only for semantic extraction of PDFs/docs; code graphs are offline"
+        }
+      ],
+      "notes": "Run `/graphify .` in a project; output in graphify-out/. Set GRAPHIFY_BACKEND=none to force offline."
+    },
+    {
+      "id": "serena",
+      "name": "Serena",
+      "kind": "mcp",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/oraios/serena",
+      "summary": "LSP-based semantic code tools (find_symbol, references, symbol edits) for 40+ languages",
+      "requires": [
+        "uv"
+      ],
+      "config": {
+        "mcp": {
+          "serena": {
+            "type": "local",
+            "command": [
+              "uvx",
+              "--from",
+              "git+https://github.com/oraios/serena",
+              "serena",
+              "start-mcp-server",
+              "--context",
+              "ide-assistant",
+              "--project-from-cwd"
+            ],
+            "enabled": true,
+            "timeout": 120000
+          }
+        }
+      },
+      "notes": "First start downloads Serena + language servers (slow once). Dashboard opens at http://localhost:24282 — disable in ~/.serena/serena_config.yml if annoying."
+    },
+    {
+      "id": "context7",
+      "name": "Context7",
+      "kind": "mcp",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/upstash/context7",
+      "summary": "Up-to-date library documentation injected into the agent's context",
+      "env": [
+        {
+          "name": "CONTEXT7_API_KEY",
+          "required": false,
+          "url": "https://context7.com/dashboard",
+          "note": "free; raises rate limits"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "context7": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "@upstash/context7-mcp"
+            ],
+            "environment": {
+              "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+            },
+            "enabled": true,
+            "timeout": 60000
+          }
+        }
+      }
+    },
+    {
+      "id": "ponytail",
+      "name": "Ponytail",
+      "kind": "plugin",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/DietrichGebert/ponytail",
+      "summary": "Makes the agent write less code (\"laziest senior dev\"); /ponytail-review, /ponytail-audit, /ponytail-debt",
+      "config": {
+        "plugin": [
+          "@dietrichgebert/ponytail"
+        ]
+      }
+    },
+    {
+      "id": "code-review",
+      "name": "Code review (opencode-code-review)",
+      "kind": "plugin",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/MetalbolicX/opencode-code-review",
+      "summary": "Reviews staged changes inside OpenCode: /ocr-review, agent ocr-review (Anthropic's code-review plugin is Claude-Code-only)",
+      "config": {
+        "plugin": [
+          "opencode-code-review"
+        ]
+      },
+      "agents": [
+        "agents/reviewer.md"
+      ],
+      "commands": [
+        "commands/review.md"
+      ],
+      "notes": "Also ships the toolkit's own @reviewer agent and /review command (works without the plugin)."
+    },
+    {
+      "id": "claude-mem",
+      "name": "claude-mem",
+      "kind": "plugin",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/thedotmack/claude-mem",
+      "summary": "Persistent cross-session memory; supports OpenCode natively",
+      "steps": [
+        {
+          "run": "npx -y claude-mem install --ide opencode",
+          "optional": true
+        }
+      ],
+      "env": [
+        {
+          "name": "CLAUDE_MEM_ONLINE_OPTIN",
+          "required": false,
+          "note": "set to false to skip the hosted-observer sign-in and use your own model keys"
+        }
+      ],
+      "notes": "Interactive installer (email magic-link or your own OpenRouter/Gemini key). Restart OpenCode afterwards."
+    },
+    {
+      "id": "codeburn",
+      "name": "CodeBurn",
+      "kind": "mcp+cli",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/getagentseal/codeburn",
+      "summary": "Token/cost tracking per project/model from the session logs OpenCode already writes",
+      "steps": [
+        {
+          "run": "npm install -g codeburn"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "codeburn": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "codeburn",
+              "mcp"
+            ],
+            "enabled": true,
+            "timeout": 30000
+          }
+        }
+      },
+      "notes": "Run `codeburn` in a terminal for the TUI, `codeburn menubar` for a tray app."
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers",
+      "kind": "plugin",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/obra/superpowers",
+      "summary": "Methodology skills: brainstorming, TDD, systematic debugging, writing plans, subagent-driven development",
+      "config": {
+        "plugin": [
+          "superpowers@git+https://github.com/obra/superpowers.git"
+        ]
+      }
+    },
+    {
+      "id": "dcp",
+      "name": "Dynamic Context Pruning",
+      "kind": "plugin",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/Tarquinen/opencode-dynamic-context-pruning",
+      "summary": "Auto-prunes stale tool outputs from context; cheapest token saver for long sessions",
+      "config": {
+        "plugin": [
+          "@tarquinen/opencode-dcp"
+        ]
+      }
+    },
+    {
+      "id": "github",
+      "name": "GitHub MCP (official)",
+      "kind": "mcp",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/github/github-mcp-server",
+      "summary": "Issues, PRs, Actions, code search from inside the agent",
+      "env": [
+        {
+          "name": "GITHUB_PERSONAL_ACCESS_TOKEN",
+          "required": true,
+          "url": "https://github.com/settings/tokens"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "github": {
+            "type": "remote",
+            "url": "https://api.githubcopilot.com/mcp/",
+            "oauth": false,
+            "headers": {
+              "Authorization": "Bearer {env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+            },
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "id": "sequential-thinking",
+      "name": "Sequential Thinking + Memory (reference MCPs)",
+      "kind": "mcp",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/modelcontextprotocol/servers",
+      "summary": "Structured step-wise reasoning + a local knowledge-graph memory, no external deps",
+      "config": {
+        "mcp": {
+          "sequential-thinking": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "@modelcontextprotocol/server-sequential-thinking"
+            ],
+            "enabled": true,
+            "timeout": 30000
+          },
+          "memory": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "@modelcontextprotocol/server-memory"
+            ],
+            "enabled": true,
+            "timeout": 30000
+          }
+        }
+      }
+    },
+    {
+      "id": "repomix",
+      "name": "Repomix MCP",
+      "kind": "mcp",
+      "group": "coding",
+      "default": false,
+      "repo": "https://github.com/yamadashy/repomix",
+      "summary": "Packs a local or remote repo into one AI-friendly file (onboard the agent to a dependency)",
+      "config": {
+        "mcp": {
+          "repomix": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "repomix",
+              "--mcp"
+            ],
+            "enabled": true,
+            "timeout": 30000
+          }
+        }
+      }
+    },
+    {
+      "id": "gitnexus",
+      "name": "GitNexus",
+      "kind": "mcp",
+      "group": "coding",
+      "default": false,
+      "repo": "https://github.com/abhigyanpatwari/GitNexus",
+      "summary": "Code-graph intelligence: call graphs, impact analysis for large codebases (overlaps graphify)",
+      "config": {
+        "mcp": {
+          "gitnexus": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "gitnexus@latest",
+              "mcp"
+            ],
+            "enabled": true,
+            "timeout": 30000
+          }
+        }
+      },
+      "notes": "Run `npx gitnexus analyze` inside a repo first."
+    },
+    {
+      "id": "omo-slim",
+      "name": "oh-my-opencode-slim",
+      "kind": "plugin",
+      "group": "coding",
+      "default": false,
+      "repo": "https://github.com/alvinunreal/oh-my-opencode-slim",
+      "summary": "Multi-agent orchestration (Orchestrator/Explorer/Oracle/Designer/Fixer…) with per-agent model mixing. Opinionated — try it on a throwaway project first",
+      "steps": [
+        {
+          "run": "npx -y oh-my-opencode-slim@latest install",
+          "optional": true
+        }
+      ],
+      "notes": "The original oh-my-opencode has become a standalone binary (omo); this slim fork is the one that still runs inside OpenCode."
+    },
+    {
+      "id": "ai-second-brain",
+      "name": "AI Second Brain (brain MCP)",
+      "kind": "mcp",
+      "group": "coding",
+      "default": true,
+      "repo": "https://github.com/JozsefKiss90/ai-second-brain",
+      "summary": "Your personal notes → SQLite FTS5 → read-only MCP (brain_search, brain_read, brain_profile)",
+      "requires": [
+        "python"
+      ],
+      "git": {
+        "repo": "https://github.com/JozsefKiss90/ai-second-brain.git"
+      },
+      "steps": [
+        {
+          "os": "win32",
+          "run": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\setup.ps1",
+          "cwd": "vendor/ai-second-brain"
+        },
+        {
+          "os": "linux",
+          "run": "python3 -m venv .venv && .venv/bin/pip install -e . mcp && .venv/bin/brain init",
+          "cwd": "vendor/ai-second-brain"
+        },
+        {
+          "os": "darwin",
+          "run": "python3 -m venv .venv && .venv/bin/pip install -e . mcp && .venv/bin/brain init",
+          "cwd": "vendor/ai-second-brain"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "brain": {
+            "type": "local",
+            "command": [
+              "{{TOOLKIT}}/scripts/brain-mcp.{{SH}}"
+            ],
+            "enabled": true,
+            "timeout": 15000
+          }
+        }
+      },
+      "notes": "setup.ps1 writes an opencode.json into vendor/ai-second-brain; the toolkit registers the same server globally via scripts/brain-mcp.cmd (Windows) / brain-mcp.sh. Import notes with `brain sync`."
+    },
+    {
+      "id": "exa",
+      "name": "Exa search MCP",
+      "kind": "mcp",
+      "group": "web",
+      "default": true,
+      "repo": "https://github.com/exa-labs/exa-mcp-server",
+      "summary": "Neural web search + deep research; works keyless with rate limits",
+      "env": [
+        {
+          "name": "EXA_API_KEY",
+          "required": false,
+          "url": "https://dashboard.exa.ai"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "exa": {
+            "type": "remote",
+            "url": "https://mcp.exa.ai/mcp",
+            "oauth": false,
+            "headers": {
+              "Authorization": "Bearer {env:EXA_API_KEY}"
+            },
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "id": "taste-skill",
+      "name": "Taste (design-taste-frontend)",
+      "kind": "skill",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/Leonxlnx/taste-skill",
+      "summary": "Anti-AI-slop frontend design: picks an art direction, real photos, self-checks in a browser at 3 widths",
+      "steps": [
+        {
+          "run": "npx -y skills add Leonxlnx/taste-skill --skill design-taste-frontend -a opencode -g -y --copy"
+        }
+      ],
+      "skillsInstalled": [
+        "design-taste-frontend"
+      ]
+    },
+    {
+      "id": "impeccable",
+      "name": "Impeccable",
+      "kind": "skill+commands",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/pbakaus/impeccable",
+      "summary": "Design-language skill + 24 slash commands + 61 AI-UI-smell detectors; OpenCode supported",
+      "steps": [
+        {
+          "run": "npx -y impeccable install"
+        }
+      ],
+      "env": [
+        {
+          "name": "IMPECCABLE_NO_TELEMETRY",
+          "required": false,
+          "note": "set 1 to opt out of telemetry"
+        }
+      ],
+      "notes": "Per-project: `npx impeccable install` is also run by new-project.mjs; then `/impeccable init` inside OpenCode writes PRODUCT.md."
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright CLI + MCP",
+      "kind": "cli+mcp",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/microsoft/playwright-cli",
+      "summary": "Browser automation for agents: playwright-cli (token-cheap, with skills) + Playwright MCP (disabled by default; enable per agent)",
+      "steps": [
+        {
+          "run": "npm install -g @playwright/cli@latest"
+        },
+        {
+          "run": "playwright-cli install --skills"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "playwright": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "@playwright/mcp@latest"
+            ],
+            "enabled": true,
+            "timeout": 60000
+          }
+        },
+        "tools": {
+          "playwright*": false
+        },
+        "agent": {
+          "researcher": {
+            "tools": {
+              "playwright*": true
+            }
+          },
+          "designer": {
+            "tools": {
+              "playwright*": true
+            }
+          }
+        }
+      },
+      "notes": "MCP tools are off globally (context cost) and on for @researcher/@designer. Prefer `playwright-cli` from bash for screenshots.",
+      "agents": [
+        "agents/researcher.md",
+        "agents/designer.md"
+      ]
+    },
+    {
+      "id": "awesome-design-md",
+      "name": "awesome-design-md",
+      "kind": "reference",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/VoltAgent/awesome-design-md",
+      "summary": "73 DESIGN.md brand/design-system files extracted from real sites — copy one into a project",
+      "git": {
+        "repo": "https://github.com/VoltAgent/awesome-design-md.git"
+      },
+      "notes": "Use `node scripts/new-project.mjs <dir> --design <name>` or `node scripts/list-designs.mjs`."
+    },
+    {
+      "id": "img2threejs",
+      "name": "img2threejs",
+      "kind": "skill",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/img2threejs/img2threejs",
+      "summary": "Rebuild the object in an image as a procedural Three.js model; /img2threejs <image>",
+      "requires": [
+        "python"
+      ],
+      "steps": [
+        {
+          "run": "npx --yes img2threejs@latest install"
+        },
+        {
+          "run": "npx --yes img2threejs@latest doctor"
+        }
+      ]
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "name": "UI UX Pro Max",
+      "kind": "skill+cli",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "summary": "Offline BM25 search over 79 UI styles, 192 palettes, 74 font pairings, 119 UX guidelines; generates design systems",
+      "requires": [
+        "python"
+      ],
+      "steps": [
+        {
+          "run": "npm install -g ui-ux-pro-max-cli"
+        },
+        {
+          "run": "uipro init --ai opencode --global"
+        }
+      ]
+    },
+    {
+      "id": "claude-motion",
+      "name": "Motion design (claude-motion-design)",
+      "kind": "skill",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/howseen-ai/claude-motion-design",
+      "summary": "Code-driven motion-design videos (HTML frames → Playwright → ffmpeg); /motion-design",
+      "requires": [
+        "python"
+      ],
+      "git": {
+        "repo": "https://github.com/howseen-ai/claude-motion-design.git"
+      },
+      "skills": {
+        "motion-design": "vendor:skill/motion-design"
+      },
+      "steps": [
+        {
+          "run": "python -m pip install --user playwright imageio-ffmpeg numpy pillow && python -m playwright install chromium",
+          "optional": true
+        }
+      ],
+      "notes": "Needs ffmpeg on PATH for the final mux."
+    },
+    {
+      "id": "frontend-design",
+      "name": "Anthropic frontend-design skill",
+      "kind": "skill",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/anthropics/claude-plugins-official",
+      "summary": "Anthropic's own skill for distinctive, non-template frontend/landing pages",
+      "steps": [
+        {
+          "run": "npx -y skills add anthropics/claude-plugins-official --skill frontend-design -a opencode -g -y --copy"
+        }
+      ],
+      "skillsInstalled": [
+        "frontend-design"
+      ]
+    },
+    {
+      "id": "21st",
+      "name": "21st MCP (ex-Magic)",
+      "kind": "mcp",
+      "group": "design",
+      "default": true,
+      "repo": "https://github.com/21st-dev/magic-mcp",
+      "summary": "Generate/search React+Tailwind UI components and logos from prompts",
+      "env": [
+        {
+          "name": "TWENTY_FIRST_API_KEY",
+          "required": true,
+          "url": "https://21st.dev/mcp"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "21st": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "@21st-dev/magic@latest"
+            ],
+            "environment": {
+              "API_KEY": "{env:TWENTY_FIRST_API_KEY}",
+              "TWENTY_FIRST_API_KEY": "{env:TWENTY_FIRST_API_KEY}"
+            },
+            "enabled": true,
+            "timeout": 60000
+          }
+        }
+      },
+      "notes": "Old Magic keys were reset after the rename — create a new key."
+    },
+    {
+      "id": "superdesign",
+      "name": "superdesign skill",
+      "kind": "skill",
+      "group": "design",
+      "default": false,
+      "repo": "https://github.com/superdesigndev/superdesign-skill",
+      "summary": "Design-direction skill that generates UI, decks and marketing graphics on an infinite canvas (needs superdesign.dev login)",
+      "steps": [
+        {
+          "run": "npx -y skills add superdesigndev/superdesign-skill -a opencode -g -y --copy --skill \"*\""
+        },
+        {
+          "run": "npm i -g @superdesign/cli@latest",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "open-design",
+      "name": "Open Design",
+      "kind": "app",
+      "group": "design",
+      "default": false,
+      "repo": "https://github.com/nexu-io/open-design",
+      "summary": "Local-first design-agent workspace (prototypes, sites, decks, motion) that drives OpenCode; desktop app",
+      "steps": [
+        {
+          "run": "echo Install the desktop app from https://open-design.ai/download then run: od mcp install opencode"
+        }
+      ],
+      "notes": "Heavy (whole app). After installing the app: `od mcp install opencode`."
+    },
+    {
+      "id": "strix",
+      "name": "Strix",
+      "kind": "cli+skill",
+      "group": "security",
+      "default": true,
+      "repo": "https://github.com/usestrix/strix",
+      "summary": "AI pentest agent (Docker sandbox) + skills; headless `strix -n` from the agent",
+      "requires": [
+        "pipx"
+      ],
+      "steps": [
+        {
+          "run": "pipx install strix-agent"
+        },
+        {
+          "run": "npx -y skills add usestrix/strix --skill penetration-testing-with-strix -a opencode -g -y --copy"
+        }
+      ],
+      "env": [
+        {
+          "name": "STRIX_LLM",
+          "required": false,
+          "note": "e.g. openai/gpt-5 or anthropic/claude-sonnet-4-5"
+        },
+        {
+          "name": "LLM_API_KEY",
+          "required": false,
+          "note": "key for STRIX_LLM"
+        }
+      ],
+      "notes": "Needs Docker running for local mode.",
+      "skillsInstalled": [
+        "penetration-testing-with-strix"
+      ]
+    },
+    {
+      "id": "security-audit-skill",
+      "name": "Cloudflare security-audit skill",
+      "kind": "skill",
+      "group": "security",
+      "default": true,
+      "repo": "https://github.com/cloudflare/security-audit-skill",
+      "summary": "Multi-phase codebase security audit with machine-readable, independently verified findings",
+      "steps": [
+        {
+          "run": "npx -y skills add cloudflare/security-audit-skill --skill security-audit -a opencode -g -y --copy"
+        }
+      ],
+      "agents": [
+        "agents/security-auditor.md"
+      ],
+      "skillsInstalled": [
+        "security-audit"
+      ]
+    },
+    {
+      "id": "rea",
+      "name": "REA: Reverse Engineer Anything",
+      "kind": "mcp+skill",
+      "group": "security",
+      "default": true,
+      "repo": "https://github.com/morluto/rea",
+      "summary": "Reverse-engineer apps/binaries/network via Ghidra/JADX/TShark… with evidence tracking",
+      "steps": [
+        {
+          "run": "npx -y rea-agents@latest setup --client opencode"
+        }
+      ],
+      "config": {
+        "tools": {
+          "rea*": false
+        }
+      },
+      "env": [
+        {
+          "name": "GHIDRA_INSTALL_DIR",
+          "required": false,
+          "note": "only for native binary analysis"
+        }
+      ],
+      "notes": "Tools are disabled globally (large tool list); enable per project with \"tools\": {\"rea*\": true} when you need them."
+    },
+    {
+      "id": "scrapling",
+      "name": "Scrapling MCP",
+      "kind": "mcp",
+      "group": "web",
+      "default": true,
+      "repo": "https://github.com/D4Vinci/Scrapling",
+      "summary": "Adaptive, anti-bot-aware fetching/extraction (plain, stealth, browser); no API key",
+      "requires": [
+        "uv"
+      ],
+      "steps": [
+        {
+          "run": "uv tool install --upgrade \"scrapling[ai]\""
+        },
+        {
+          "run": "scrapling install",
+          "optional": true
+        }
+      ],
+      "config": {
+        "mcp": {
+          "scrapling": {
+            "type": "local",
+            "command": [
+              "scrapling",
+              "mcp"
+            ],
+            "enabled": true,
+            "timeout": 60000
+          }
+        },
+        "tools": {
+          "scrapling*": false
+        },
+        "agent": {
+          "researcher": {
+            "tools": {
+              "scrapling*": true
+            }
+          }
+        }
+      },
+      "notes": "Off globally; enabled for @researcher. `scrapling install` downloads browser deps for stealth/dynamic modes."
+    },
+    {
+      "id": "scrapegraph",
+      "name": "ScrapeGraphAI MCP",
+      "kind": "mcp",
+      "group": "web",
+      "default": false,
+      "repo": "https://github.com/ScrapeGraphAI/scrapegraph-mcp",
+      "summary": "LLM-powered scraping/search/markdownify via the hosted ScrapeGraph API (paid, trial credits)",
+      "requires": [
+        "uv"
+      ],
+      "env": [
+        {
+          "name": "SGAI_API_KEY",
+          "required": true,
+          "url": "https://dashboard.scrapegraphai.com"
+        }
+      ],
+      "steps": [
+        {
+          "run": "uv tool install --upgrade scrapegraph-mcp"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "scrapegraph": {
+            "type": "local",
+            "command": [
+              "scrapegraph-mcp"
+            ],
+            "environment": {
+              "SGAI_API_KEY": "{env:SGAI_API_KEY}"
+            },
+            "enabled": true,
+            "timeout": 30000
+          }
+        },
+        "tools": {
+          "scrapegraph*": false
+        }
+      }
+    },
+    {
+      "id": "firecrawl",
+      "name": "Firecrawl MCP",
+      "kind": "mcp",
+      "group": "web",
+      "default": true,
+      "repo": "https://github.com/firecrawl/firecrawl-mcp-server",
+      "summary": "Scrape/search/parse sites to clean markdown; keyless hosted endpoint for scrape+search",
+      "env": [
+        {
+          "name": "FIRECRAWL_API_KEY",
+          "required": false,
+          "url": "https://firecrawl.dev"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "firecrawl": {
+            "type": "local",
+            "command": [
+              "npx",
+              "-y",
+              "firecrawl-mcp"
+            ],
+            "environment": {
+              "FIRECRAWL_API_KEY": "{env:FIRECRAWL_API_KEY}"
+            },
+            "enabled": true,
+            "timeout": 60000
+          }
+        },
+        "tools": {
+          "firecrawl*": false
+        },
+        "agent": {
+          "researcher": {
+            "tools": {
+              "firecrawl*": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "agent-reach",
+      "name": "Agent Reach",
+      "kind": "cli+skill",
+      "group": "web",
+      "default": false,
+      "repo": "https://github.com/Panniantong/Agent-Reach",
+      "summary": "Read/search Twitter/X, Reddit, YouTube, GitHub, LinkedIn, podcasts from the agent (cookie-based)",
+      "requires": [
+        "pipx"
+      ],
+      "steps": [
+        {
+          "run": "pipx install https://github.com/Panniantong/agent-reach/archive/main.zip"
+        },
+        {
+          "run": "agent-reach install --env=auto --system",
+          "optional": true
+        }
+      ],
+      "env": [
+        {
+          "name": "TWITTER_AUTH_TOKEN",
+          "required": false,
+          "note": "cookie from a burner account"
+        },
+        {
+          "name": "TWITTER_CT0",
+          "required": false
+        }
+      ],
+      "notes": "Not officially OpenCode-listed. After `agent-reach install --system`, copy the generated skill folder (printed by the installer) into ~/.config/opencode/skills/agent-reach/."
+    },
+    {
+      "id": "marketingskills",
+      "name": "marketingskills (52 skills)",
+      "kind": "skill",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/coreyhaines31/marketingskills",
+      "summary": "Copywriting, cold-email, SEO audit, ads, launch, pricing, offers, marketing plan, competitor profiling, prospecting, sales enablement, CRO…",
+      "steps": [
+        {
+          "run": "npx -y skills add coreyhaines31/marketingskills --skill \"*\" -a opencode -g -y --copy"
+        }
+      ],
+      "agents": [
+        "agents/marketer.md"
+      ]
+    },
+    {
+      "id": "office-skills",
+      "name": "Anthropic document skills (pptx/docx/pdf/xlsx)",
+      "kind": "skill",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/anthropics/skills",
+      "summary": "Production pitch-deck (pptx), proposal/SOW (docx), PDF and spreadsheet generation skills",
+      "requires": [
+        "python"
+      ],
+      "steps": [
+        {
+          "run": "npx -y skills add anthropics/skills --skill pptx --skill docx --skill pdf --skill xlsx -a opencode -g -y --copy"
+        },
+        {
+          "run": "python -m pip install --user python-pptx python-docx openpyxl pypdf reportlab",
+          "optional": true
+        }
+      ],
+      "notes": "Rendering decks to images needs LibreOffice; see each SKILL.md.",
+      "skillsInstalled": [
+        "pptx",
+        "docx",
+        "pdf",
+        "xlsx"
+      ]
+    },
+    {
+      "id": "client-pitch",
+      "name": "Toolkit skill: client-pitch",
+      "kind": "skill",
+      "group": "marketing",
+      "default": true,
+      "summary": "Workflow skill: discovery → proposal (docx) → pitch deck (pptx) → follow-up, using the skills above",
+      "skills": {
+        "client-pitch": "skills/client-pitch"
+      },
+      "agents": [
+        "agents/pitch-writer.md"
+      ]
+    },
+    {
+      "id": "portfolio-site",
+      "name": "Toolkit skill: portfolio-site",
+      "kind": "skill",
+      "group": "marketing",
+      "default": true,
+      "summary": "Workflow skill: case-study-driven portfolio site using frontend-design + impeccable + taste + DESIGN.md",
+      "skills": {
+        "portfolio-site": "skills/portfolio-site"
+      }
+    },
+    {
+      "id": "outreach-campaign",
+      "name": "Toolkit skill: outreach-campaign",
+      "kind": "skill",
+      "group": "marketing",
+      "default": true,
+      "summary": "Workflow skill: ICP → lead list (Apollo/Hunter/Apify) → sequence copy → send via Resend → track in HubSpot/Notion",
+      "skills": {
+        "outreach-campaign": "skills/outreach-campaign"
+      }
+    },
+    {
+      "id": "apollo",
+      "name": "Apollo.io MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/apolloio/apollo-mcp-plugin",
+      "summary": "Prospecting, enrichment, sequences (OAuth; free plan + credits)",
+      "config": {
+        "mcp": {
+          "apollo": {
+            "type": "remote",
+            "url": "https://mcp.apollo.io/mcp",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "apollo*": false
+        }
+      }
+    },
+    {
+      "id": "hubspot",
+      "name": "HubSpot MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/HubSpot/hubspot-mcp-plugins",
+      "summary": "CRM contacts, deals, pipeline (OAuth; free CRM tier)",
+      "config": {
+        "mcp": {
+          "hubspot": {
+            "type": "remote",
+            "url": "https://mcp.hubspot.com/anthropic",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "hubspot*": false
+        }
+      }
+    },
+    {
+      "id": "hunter",
+      "name": "Hunter.io",
+      "kind": "reference",
+      "group": "marketing",
+      "default": false,
+      "repo": "https://github.com/hunter-io/claude-plugin",
+      "summary": "Find/verify professional emails (free: 25 searches/mo). MCP URL lives in the repo's .mcp.json — add manually",
+      "env": [
+        {
+          "name": "HUNTER_API_KEY",
+          "required": false,
+          "url": "https://hunter.io/api-keys"
+        }
+      ]
+    },
+    {
+      "id": "resend",
+      "name": "Resend (email) skills + MCP",
+      "kind": "mcp+skill",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/resend/resend-skills",
+      "summary": "Send outreach/transactional email from the agent; react-email + email best-practice skills",
+      "env": [
+        {
+          "name": "RESEND_API_KEY",
+          "required": false,
+          "url": "https://resend.com/api-keys"
+        }
+      ],
+      "steps": [
+        {
+          "run": "npx -y skills add resend/resend-skills --skill \"*\" -a opencode -g -y --copy"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "resend": {
+            "type": "remote",
+            "url": "https://mcp.resend.com/mcp",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "resend*": false
+        }
+      }
+    },
+    {
+      "id": "canva",
+      "name": "Canva MCP + skills",
+      "kind": "mcp+skill",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/canva-sdks/canva-skills",
+      "summary": "Create/resize/brand-check designs, social posts, one-pagers (OAuth; free account ok)",
+      "steps": [
+        {
+          "run": "npx -y skills add canva-sdks/canva-skills --skill \"*\" -a opencode -g -y --copy"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "canva": {
+            "type": "remote",
+            "url": "https://mcp.canva.com/mcp",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "canva*": false
+        }
+      }
+    },
+    {
+      "id": "figma",
+      "name": "Figma remote MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://github.com/figma/mcp-server-guide",
+      "summary": "Read design context, generate code from frames, (beta) write to canvas (OAuth; free seats limited to 6 calls/mo)",
+      "config": {
+        "mcp": {
+          "figma": {
+            "type": "remote",
+            "url": "https://mcp.figma.com/mcp",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "figma*": false
+        }
+      }
+    },
+    {
+      "id": "notion",
+      "name": "Notion remote MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": true,
+      "repo": "https://developers.notion.com/guides/mcp/get-started-with-mcp",
+      "summary": "Client CRM-lite, proposals, content calendar (OAuth; free plan)",
+      "config": {
+        "mcp": {
+          "notion": {
+            "type": "remote",
+            "url": "https://mcp.notion.com/mcp",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "notion*": false
+        }
+      }
+    },
+    {
+      "id": "apify",
+      "name": "Apify MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": false,
+      "repo": "https://github.com/apify/apify-mcp-server",
+      "summary": "Run store scrapers (Google Maps, LinkedIn, Instagram lead scrapers…) — check target ToS; $5/mo free credit",
+      "env": [
+        {
+          "name": "APIFY_TOKEN",
+          "required": true,
+          "url": "https://console.apify.com/account/integrations"
+        }
+      ],
+      "config": {
+        "mcp": {
+          "apify": {
+            "type": "remote",
+            "url": "https://mcp.apify.com",
+            "oauth": false,
+            "headers": {
+              "Authorization": "Bearer {env:APIFY_TOKEN}"
+            },
+            "enabled": true
+          }
+        },
+        "tools": {
+          "apify*": false
+        }
+      }
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe MCP",
+      "kind": "mcp",
+      "group": "marketing",
+      "default": false,
+      "repo": "https://github.com/stripe/ai",
+      "summary": "Invoices, payment links, customers from day one (OAuth)",
+      "config": {
+        "mcp": {
+          "stripe": {
+            "type": "remote",
+            "url": "https://mcp.stripe.com",
+            "enabled": true
+          }
+        },
+        "tools": {
+          "stripe*": false
+        }
+      }
+    },
+    {
+      "id": "omniroute",
+      "name": "OmniRoute",
+      "kind": "provider",
+      "group": "infra",
+      "default": false,
+      "repo": "https://github.com/diegosouzapw/OmniRoute",
+      "summary": "Self-hosted LLM gateway/router over 160+ providers (incl. free tiers) exposed as an OpenCode provider",
+      "steps": [
+        {
+          "run": "npm install -g omniroute"
+        }
+      ],
+      "env": [
+        {
+          "name": "OMNIROUTE_API_KEY",
+          "required": false,
+          "note": "default local key sk_omniroute works when REQUIRE_API_KEY=false"
+        }
+      ],
+      "config": {
+        "provider": {
+          "omniroute": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "OmniRoute",
+            "options": {
+              "baseURL": "http://localhost:20128/v1",
+              "apiKey": "{env:OMNIROUTE_API_KEY}"
+            },
+            "models": {
+              "auto": {
+                "name": "Auto"
+              }
+            }
+          }
+        }
+      },
+      "notes": "Start with `omniroute` (dashboard on :20128), connect providers there, then `omniroute config opencode` for a full model list."
+    },
+    {
+      "id": "laya",
+      "name": "Laya",
+      "kind": "mcp",
+      "group": "infra",
+      "default": false,
+      "repo": "https://github.com/NandhaKishorM/laya",
+      "summary": "Open-weight 'System 1' decision engine MCP (routing/triage/guardrails). Niche for coding; off by default",
+      "requires": [
+        "uv"
+      ],
+      "steps": [
+        {
+          "run": "uv tool install --upgrade \"laya[mcp]\""
+        }
+      ],
+      "config": {
+        "mcp": {
+          "laya": {
+            "type": "local",
+            "command": [
+              "laya-mcp-server"
+            ],
+            "environment": {
+              "LAYA_DEVICE": "cpu"
+            },
+            "enabled": true,
+            "timeout": 120000
+          }
+        },
+        "tools": {
+          "laya*": false
+        }
+      }
+    },
+    {
+      "id": "awesome-free-llm-apis",
+      "name": "awesome-free-llm-apis",
+      "kind": "reference",
+      "group": "infra",
+      "default": false,
+      "repo": "https://github.com/mnfst/awesome-free-llm-apis",
+      "summary": "Reference list of free LLM API tiers (Gemini, Groq, Mistral, NVIDIA NIM, OpenRouter…) — feed into OmniRoute or opencode.json providers",
+      "git": {
+        "repo": "https://github.com/mnfst/awesome-free-llm-apis.git"
+      }
+    },
+    {
+      "id": "headroom",
+      "name": "headroom (unconfirmed match for 'headspace')",
+      "kind": "mcp",
+      "group": "infra",
+      "default": false,
+      "repo": "https://github.com/headroomlabs-ai/headroom",
+      "summary": "Compresses tool outputs/logs/JSON before they reach the LLM (library, proxy, MCP). Only install if this is what you meant",
+      "notes": "No tool named 'headspace' for coding agents could be verified. Tell the toolkit maintainer the URL you had in mind."
+    }
+  ]
+}
