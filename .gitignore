@@ -3,3 +3,14 @@ vendor/
 node_modules/
 *.bak
 graphify-out/
+
+# Safety net: per-project files that third-party installers might drop here
+.opencode/
+.claude/
+.agents/
+.cursor/
+.codex/
+PRODUCT.md
+DESIGN.md
+AGENTS.md
+!templates/**

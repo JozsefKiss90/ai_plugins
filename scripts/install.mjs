@@ -62,7 +62,11 @@ function checkPrereqs(tools) {
 // ---------- 3. install one tool ----------
 async function installTool(t, env) {
   log.head(`${t.name}  ${c.dim(`[${t.kind}] ${t.repo || ""}`)}`);
-  const tcwd = t.cwd ? path.resolve(REPO_ROOT, t.cwd) : REPO_ROOT;
+  // Third-party installers often write into their current directory. Run them in a git-ignored
+  // scratch dir so the toolkit repo itself stays untouched.
+  const scratch = path.join(vendorDir(), "_work");
+  if (!DRY) fs.mkdirSync(scratch, { recursive: true });
+  const tcwd = t.cwd ? path.resolve(REPO_ROOT, t.cwd) : scratch;
 
   // 3a. vendored git repos (skills, sources)
   if (t.git) {
@@ -80,7 +84,7 @@ async function installTool(t, env) {
   for (const s of t.steps || []) {
     if (s.os && s.os !== process.platform) continue;
     if (s.optional && !args.yes && !(await ask(`Run optional step "${s.run}"?`))) continue;
-    const cwd = s.cwd ? path.resolve(tcwd, s.cwd) : tcwd;
+    const cwd = s.cwd ? path.resolve(REPO_ROOT, s.cwd) : tcwd;
     const r = run(s.run, { cwd, dry: DRY, env });
     if (r.status !== 0) log.warn(`step failed (exit ${r.status}) — continuing: ${s.run}`);
   }

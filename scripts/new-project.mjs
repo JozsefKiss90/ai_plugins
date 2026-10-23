@@ -11,6 +11,12 @@ const args = parseArgs(process.argv.slice(2));
 const target = args._[0];
 if (!target) { console.log("usage: node scripts/new-project.mjs <dir> [--design <name>] [--no-impeccable] [--no-uipro]"); process.exit(1); }
 const dir = path.resolve(target);
+// The toolkit is a template: never scaffold a project inside it.
+const rel = path.relative(REPO_ROOT, dir);
+if (!rel || (!rel.startsWith("..") && !path.isAbsolute(rel))) {
+  log.err(`Refusing to scaffold inside the toolkit repo (${REPO_ROOT}). Pick a folder outside it, e.g. ../my-project`);
+  process.exit(1);
+}
 fs.mkdirSync(dir, { recursive: true });
 log.head(`Scaffolding ${dir}`);
 
