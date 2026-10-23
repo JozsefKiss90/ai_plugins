@@ -27,7 +27,8 @@
       "exa",
       "ai-second-brain",
       "omo-slim",
-      "mattpocock-skills"
+      "mattpocock-skills",
+      "firecrawl"
     ],
     "design": [
       "taste-skill",
@@ -71,7 +72,8 @@
       "apify",
       "stripe",
       "superdesign",
-      "exa"
+      "exa",
+      "firecrawl"
     ],
     "all": [
       "*"
@@ -541,11 +543,7 @@
       "default": true,
       "repo": "https://github.com/pbakaus/impeccable",
       "summary": "Design-language skill + 24 slash commands + 61 AI-UI-smell detectors; OpenCode supported",
-      "steps": [
-        {
-          "run": "npx -y impeccable install"
-        }
-      ],
+      "steps": [],
       "env": [
         {
           "name": "IMPECCABLE_NO_TELEMETRY",
@@ -553,7 +551,8 @@
           "note": "set 1 to opt out of telemetry"
         }
       ],
-      "notes": "Per-project: `npx impeccable install` is also run by new-project.mjs; then `/impeccable init` inside OpenCode writes PRODUCT.md."
+      "notes": "Per-project only (it writes into the project's agent folders): new-project.mjs runs `npx impeccable install` for you; then `/impeccable init` inside OpenCode writes PRODUCT.md.",
+      "perProject": true
     },
     {
       "id": "playwright",
@@ -941,17 +940,18 @@
     },
     {
       "id": "firecrawl",
-      "name": "Firecrawl MCP",
-      "kind": "mcp",
+      "name": "Firecrawl (CLI + skills + MCP)",
+      "kind": "cli+skill+mcp",
       "group": "web",
       "default": true,
-      "repo": "https://github.com/firecrawl/firecrawl-mcp-server",
-      "summary": "Scrape/search/parse sites to clean markdown; keyless hosted endpoint for scrape+search",
+      "repo": "https://github.com/firecrawl/cli",
+      "summary": "Web search/scrape/crawl/map/interact to clean markdown via the `firecrawl` CLI and 22 agent skills (developer-docs lookup, deep research, competitive intel, lead gen, SEO audit, site clone); MCP server gated to @researcher",
       "env": [
         {
           "name": "FIRECRAWL_API_KEY",
-          "required": false,
-          "url": "https://firecrawl.dev"
+          "required": true,
+          "url": "https://www.firecrawl.dev/app/api-keys",
+          "note": "hosted Firecrawl needs a key (free credits on signup); or run `firecrawl login` once"
         }
       ],
       "config": {
@@ -980,7 +980,23 @@
             }
           }
         }
-      }
+      },
+      "steps": [
+        {
+          "run": "npm install -g firecrawl-cli@latest"
+        },
+        {
+          "run": "npx -y skills add firecrawl/skills --skill firecrawl --skill firecrawl-search --skill firecrawl-scrape --skill firecrawl-map --skill firecrawl-crawl --skill firecrawl-interact --skill firecrawl-agent --skill firecrawl-download --skill firecrawl-parse --skill firecrawl-monitor --skill firecrawl-developer-index --skill firecrawl-research-index --skill firecrawl-build --skill firecrawl-deep-research --skill firecrawl-competitive-intel --skill firecrawl-market-research --skill firecrawl-lead-gen --skill firecrawl-lead-research --skill firecrawl-business-contacts --skill firecrawl-company-directories --skill firecrawl-seo-audit --skill firecrawl-website-design-clone -a opencode -g -y --copy"
+        }
+      ],
+      "skillsInstalled": [
+        "firecrawl",
+        "firecrawl-search",
+        "firecrawl-scrape",
+        "firecrawl-developer-index",
+        "firecrawl-lead-gen"
+      ],
+      "notes": "Skills drive the `firecrawl` CLI through bash, so they work in every agent. The MCP server stays registered but tool-gated (on for @researcher). Check usage with `firecrawl credit-usage`. For a self-hosted Firecrawl, pass --api-url and no key is needed."
     },
     {
       "id": "agent-reach",

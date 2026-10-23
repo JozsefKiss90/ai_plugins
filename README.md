@@ -41,7 +41,7 @@ Then open a **new terminal** (env vars), `node scripts/doctor.mjs` to verify, an
 [Strix](https://github.com/usestrix/strix) (AI pentest, needs Docker) · [Cloudflare security-audit skill](https://github.com/cloudflare/security-audit-skill) (+ `@security-auditor`) · [REA: Reverse Engineer Anything](https://github.com/morluto/rea)
 
 ### Web / scraping
-[Scrapling](https://github.com/D4Vinci/Scrapling) · [Firecrawl](https://github.com/firecrawl/firecrawl-mcp-server) · [Exa](https://github.com/exa-labs/exa-mcp-server) · optional: [ScrapeGraphAI](https://github.com/ScrapeGraphAI/scrapegraph-mcp) (paid), [Agent Reach](https://github.com/Panniantong/Agent-Reach) (social platforms, cookie-based)
+[Scrapling](https://github.com/D4Vinci/Scrapling) · **[Firecrawl](https://github.com/firecrawl/cli)** (CLI + 22 skills: `firecrawl-search/scrape/crawl/map/interact`, `firecrawl-developer-index`, `firecrawl-deep-research`, `firecrawl-competitive-intel`, `firecrawl-lead-gen`, `firecrawl-seo-audit`, `firecrawl-website-design-clone`… + [MCP](https://github.com/firecrawl/firecrawl-mcp-server)) · [Exa](https://github.com/exa-labs/exa-mcp-server) · optional: [ScrapeGraphAI](https://github.com/ScrapeGraphAI/scrapegraph-mcp) (paid), [Agent Reach](https://github.com/Panniantong/Agent-Reach) (social platforms, cookie-based)
 
 ### Marketing, sales, portfolio, pitching (greenfield client work)
 | Tool | What for |
@@ -57,6 +57,26 @@ Then open a **new terminal** (env vars), `node scripts/doctor.mjs` to verify, an
 
 ### Agents & commands shipped here
 `@reviewer`, `@security-auditor`, `@researcher`, `@designer`, `@marketer`, `@pitch-writer` (in `agents/`) and `/review` (global); `/pitch`, `/audit` in the project template.
+
+## Using it as a template (keep this repo untouched)
+
+This repo is a **template**: you clone it once per machine and never push project code to it.
+
+```
+~/opencode-toolkit/          ← this repo: catalog, installer, templates (read-only in day-to-day use)
+~/.config/opencode/          ← what the installer writes: global config, skills, agents, commands
+~/.agents/skills/            ← skills installed by the `skills` CLI
+~/code/client-a/             ← a project: its own git repo, own remote
+~/code/client-b/             ← another project
+```
+
+- `install.mjs` writes only to your user config. Third-party installers run in `vendor/_work/` (git-ignored), so nothing they drop lands in the repo.
+- `new-project.mjs <dir>` **copies** `templates/project/` into `<dir>` and runs `git init` there. It refuses to scaffold inside the toolkit folder.
+- Each project then gets its own remote: `cd ~/code/client-a && git remote add origin <url> && git push -u origin main`.
+- Per-project tweaks (enable a gated MCP, extra instructions) go in that project's `opencode.json` / `AGENTS.md`. Project config overrides the global one; it never flows back here.
+- `.env` and `vendor/` are git-ignored; `git status` in the toolkit should always be clean.
+- To change the shared setup (add a tool, edit an agent), do it deliberately here, commit, push; your friend runs `git pull && node scripts/install.mjs`.
+- On GitHub, mark the repo as a **Template repository** (Settings → General) if you'd rather start projects with "Use this template". The scaffold script is still the better route, because it keeps project repos free of the installer code.
 
 ## Usage
 

@@ -12,6 +12,8 @@ Output lives in `pitch/`. Work in this order; stop and ask when a step needs inf
 Ask at most 8 questions, grouped: business goal & success metric · users & current workaround · must-have vs nice-to-have · constraints (budget range, deadline, stack, compliance) · decision maker & timeline · what happens if they do nothing.
 Save answers to `pitch/discovery.md`.
 
+Before scoping, run `firecrawl-lead-research` on the prospect (site, recent news, job posts) and `firecrawl-competitive-intel` on 2–3 competitors; save to `pitch/research.md`.
+
 ## 2. Scope & options
 Write `pitch/scope.md`: problem statement (2 sentences) · 3 options (Minimal / Recommended / Extended) with scope, timeline, price or price range, risks · explicit out-of-scope list · assumptions to confirm.
 Pricing: use the `pricing` and `offers` skills from marketingskills; anchor on outcome value, present Recommended as the default.

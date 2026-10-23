@@ -12,7 +12,7 @@ Keep everything under `outreach/<campaign-name>/`.
 Load `customer-research` and `offers` skills. Write `icp.md`: segment, company size, trigger events (hiring, funding, new product, bad reviews), decision-maker titles, the single painful problem, your offer and proof.
 
 ## 2. Lead list
-Options, cheapest first: `exa` search + `firecrawl` for company sites → `apollo` MCP (people search + enrichment; uses credits) → Hunter for emails → `apify` actors only if the target platform's ToS allows it. Write `leads.csv` with: company, website, person, title, email, trigger, source URL, personalisation note. Verify emails before sending (Hunter/Apollo verify). Never scrape or store personal data beyond business contact info; respect GDPR — include an opt-out line and your business address.
+Options, cheapest first: `firecrawl-lead-gen` / `firecrawl-company-directories` skills (or `exa` search + `firecrawl-scrape` on company sites) → `apollo` MCP (people search + enrichment; uses credits) → Hunter for emails → `apify` actors only if the target platform's ToS allows it. Write `leads.csv` with: company, website, person, title, email, trigger, source URL, personalisation note. Verify emails before sending (Hunter/Apollo verify). Never scrape or store personal data beyond business contact info; respect GDPR — include an opt-out line and your business address.
 
 ## 3. Sequence copy
 Load `cold-email`. Write `sequence.md`: 3–4 touches over 14 days. Each email ≤ 90 words, one specific observation about them (the trigger), one line on outcome, one soft CTA. Variants A/B for the first email's subject line.
